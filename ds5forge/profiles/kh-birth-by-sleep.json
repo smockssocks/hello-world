@@ -3,7 +3,7 @@
   "exe": [
     "KINGDOM HEARTS Birth by Sleep FINAL MIX.exe"
   ],
-  "notes": "Haptics come from the game's own rumble (through the virtual Xbox controller) plus its sound: keyblade hits and magic give crisp taps, big attacks and bosses give deep rumble. Before playing: turn Steam Input OFF for this game. If the game reacts to every button twice, install HidHide and hide the DualSense from the game. Triggers are left free; use the Trigger Lab if you want resistance.",
+  "notes": "Haptics come from the game's own rumble (through the virtual Xbox controller) plus its sound: keyblade hits and magic give crisp taps, big attacks and bosses give deep rumble. Before playing: turn Steam Input OFF for this game. If the game reacts to every button twice, install HidHide and hide the DualSense from the game. Triggers are left free; use the Trigger Lab if you want resistance. Game state: DS5 Forge reads the game's memory (read-only). Birth by Sleep's HP address isn't published, so the first time, open the Game Data tab and run Find HP (takes a minute, then it's saved). After that: hits, healing, low-HP heartbeat and death are felt in the haptics, triggers and lightbar.",
   "audio_haptics": {
     "enabled": true,
     "gain": 0.9,
@@ -14,5 +14,18 @@
   "xbox_bridge": {
     "enabled": true,
     "trigger_rumble": false
+  },
+  "integration": "kingdom_hearts",
+  "integration_settings": {
+    "damage": 1.0,
+    "heal": 0.6,
+    "heartbeat": true,
+    "low_hp": 0.25,
+    "trigger_effects": true,
+    "lightbar": "hp",
+    "player_leds": true,
+    "mp": true,
+    "battle_alerts": true,
+    "quiet_cutscenes": true
   }
 }

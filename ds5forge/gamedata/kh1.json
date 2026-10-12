@@ -1,0 +1,60 @@
+{
+  "id": "kh1",
+  "name": "Kingdom Hearts Final Mix",
+  "process": [
+    "KINGDOM HEARTS FINAL MIX.exe"
+  ],
+  "source": "KHPCSpeedrunTools (Denhonator et al.) 1FMMods io_packages",
+  "versions": {
+    "Steam Global 1.0.0.2": {
+      "check": {
+        "offset": "0x4698D2",
+        "type": "u8",
+        "equals": 106
+      },
+      "fields": {
+        "hp": {
+          "offset": "0x2D5CC4C",
+          "type": "u8"
+        },
+        "max_hp": {
+          "offset": "0x2D5CC50",
+          "type": "u8"
+        },
+        "hud": {
+          "offset": "0x281249C",
+          "type": "f32"
+        },
+        "cutscene": {
+          "offset": "0x23AB2D0",
+          "type": "i32"
+        }
+      }
+    },
+    "Steam JP 1.0.0.2": {
+      "check": {
+        "offset": "0x469872",
+        "type": "u8",
+        "equals": 106
+      },
+      "fields": {
+        "hp": {
+          "offset": "0x2D5CC4C",
+          "type": "u8"
+        },
+        "max_hp": {
+          "offset": "0x2D5CC50",
+          "type": "u8"
+        },
+        "hud": {
+          "offset": "0x281249C",
+          "type": "f32"
+        },
+        "cutscene": {
+          "offset": "0x23AB2D0",
+          "type": "i32"
+        }
+      }
+    }
+  }
+}

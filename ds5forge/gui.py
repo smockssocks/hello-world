@@ -12,6 +12,7 @@ from tkinter import colorchooser, messagebox, ttk
 
 from . import APP_NAME, __version__
 from .engine import Engine
+from .gui_gamedata import GameDataTab
 from .haptics import synth
 from .profiles import Profile, save_user_profile, user_profile_dir
 from .settings import HAPTICS_MODES
@@ -69,6 +70,7 @@ class App:
         self._build_profiles(nb)
         self._build_trigger_lab(nb)
         self._build_haptics_lab(nb)
+        self.gamedata_tab = GameDataTab(self, nb)
         self._build_games(nb)
         self._build_log(nb)
         self.root.protocol("WM_DELETE_WINDOW", self.close)
@@ -528,6 +530,9 @@ class App:
         self.bar_r2["value"] = inp.r2 / 255
         self.bar_hap["value"] = min(s["haptic_peak"], 1.0)
 
+        self._ticks = getattr(self, "_ticks", 0) + 1
+        if self._ticks % 3 == 0:
+            self.gamedata_tab.refresh()
         if self._log_handler.count != self._log_shown:
             self._log_shown = self._log_handler.count
             self.txt_log.configure(state="normal")

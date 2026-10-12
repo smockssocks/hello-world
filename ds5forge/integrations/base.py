@@ -23,6 +23,7 @@ class Outputs:
     right_trigger: TriggerEffect | None = None
     lightbar: tuple[int, int, int] | None = None
     player_leds: int | None = None
+    mute_audio: bool = False  # pause sound-based haptics (e.g. during cutscenes)
 
 
 class Integration:

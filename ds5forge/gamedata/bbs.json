@@ -1,0 +1,36 @@
+{
+  "id": "bbs",
+  "name": "Kingdom Hearts Birth by Sleep Final Mix",
+  "process": [
+    "KINGDOM HEARTS Birth by Sleep FINAL MIX.exe"
+  ],
+  "source": "KHPCSpeedrunTools BBSMods io_packages (version check, location). HP: use DS5 Forge's Find HP wizard.",
+  "versions": {
+    "Steam Global 1.0.0.2": {
+      "check": {
+        "offset": "0x726464",
+        "type": "u8",
+        "equals": 106
+      },
+      "fields": {
+        "location": {
+          "offset": "0x818120",
+          "type": "u32"
+        }
+      }
+    },
+    "Steam JP 1.0.0.2": {
+      "check": {
+        "offset": "0x7253E4",
+        "type": "u8",
+        "equals": 106
+      },
+      "fields": {
+        "location": {
+          "offset": "0x817120",
+          "type": "u32"
+        }
+      }
+    }
+  }
+}

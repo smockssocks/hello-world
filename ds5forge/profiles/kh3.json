@@ -5,7 +5,7 @@
     "KINGDOM HEARTS III-Win64-Shipping.exe",
     "KHIII-Win64-Shipping.exe"
   ],
-  "notes": "Game rumble (attraction rides, Formchanges, big finishers) becomes HD haptics through the virtual Xbox controller, and sound adds hit taps. Turn Steam Input OFF for KH3. If the game reacts to every button twice, install HidHide and hide the DualSense from the game. If auto-detection misses the game, use 'Add running game...' while it's open.",
+  "notes": "Game rumble (attraction rides, Formchanges, big finishers) becomes HD haptics through the virtual Xbox controller, and sound adds hit taps. Turn Steam Input OFF for KH3. If the game reacts to every button twice, install HidHide and hide the DualSense from the game. If auto-detection misses the game, use 'Add running game...' while it's open. Live game state (HP etc.) isn't available for KH3 yet - it's an Unreal Engine game whose data moves around in memory, so it needs a different approach than the 1.5+2.5 games.",
   "audio_haptics": {
     "enabled": true,
     "gain": 0.9,

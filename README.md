@@ -61,6 +61,41 @@ every button twice (it sees the real DualSense *and* the virtual Xbox pad). In H
 - Triggers are free by default. If you want resistance, try effects in the **Trigger Lab** and save them
   into the profile.
 
+### Kingdom Hearts game state (Birth by Sleep, KH1, KH2)
+DS5 Forge reads the game's live state straight from memory: read-only, nothing to install, and using
+the same addresses the KH randomizer/speedrun tools use for the **current Steam builds**:
+
+| You... | You feel |
+|---|---|
+| Take a hit | Impact scaled by how much HP you lost, red lightbar flash, both triggers jolt |
+| Heal | Soft rising "cure" shimmer, green flash |
+| Drop below 25% HP | Heartbeat in the haptics **and** the triggers that speeds up as HP falls, lightbar pulses red |
+| Get KO'd | Long falling rumble, triggers go limp, lightbar fades |
+| Cast a spell (KH2) | Quick chirp; chime when MP recharges |
+| Get ambushed / boss starts (KH2) | Alert pulse |
+| Watch a cutscene (KH1) | Sound-based haptics pause |
+
+The lightbar shows your HP colour (green → yellow → red) and the player LEDs act as an HP bar.
+
+| Game | Status |
+|---|---|
+| KH1 Final Mix | Works out of the box (HP, max HP, cutscenes) |
+| KH2 Final Mix | Works out of the box (HP, MP, battles) |
+| Birth by Sleep | HP isn't published by the community yet: **one-time setup** below |
+| KH3 | Not yet (Unreal Engine game; its data moves around in memory) |
+
+**Birth by Sleep one-time setup (about a minute):** start the game and load a save, open DS5 Forge's
+**Game Data** tab and follow the steps: *Start scan* at full HP → take a hit → *It went DOWN* → stand
+still → *It DIDN'T change* → heal → *It went UP* → repeat until one or two addresses are left (the right
+one follows your HP live) → *Save selected address*. It's remembered from then on. If nothing is left,
+press *Reset*, choose *2 bytes* and try again. You can also find `max_hp` the same way (optional; DS5 Forge
+otherwise uses the highest HP it has seen).
+
+Tuning lives in the profile's `integration_settings`: `damage`, `heal`, `heartbeat`, `low_hp`,
+`trigger_effects`, `lightbar` (`"hp"`/`"off"`), `player_leds`, `mp`, `battle_alerts`, `quiet_cutscenes`.
+Address files are in `ds5forge/gamedata/` (yours in `%APPDATA%\DS5Forge\gamedata`), so a game update
+only needs new numbers, not a new app.
+
 ### Kingdom Hearts III
 - Same as above. If auto-detection doesn't notice KH3 starting, open **Profiles → Kingdom Hearts III →
   Add running game…** while the game is running, pick its .exe, then *Save as my profile*.
@@ -127,6 +162,8 @@ Trigger types: `feedback`, `slope`, `weapon`, `vibration`, `bow`, `galloping`, `
   Bluetooth, or as classic rumble.
 - `ds5forge/dsx_server.py`: DSX-compatible mod server (UDP 127.0.0.1:6969, JSON instructions, plus the
   older text-file mode).
+- `ds5forge/memory.py`, `gamedata.py`, `scanner.py`: read-only game memory access, versioned address
+  maps, and the Find-a-value scanner. `integrations/kingdom_hearts.py` turns KH state into feedback.
 - `ds5forge/layers.py`: game-sound haptics, hit taps, and the virtual Xbox controller bridge.
 - `ds5forge/integrations/`: telemetry readers for racing games (Forza, F1, Assetto, BeamNG). Unused by
   default, but available if you add a profile with `"integration": "forza"` and similar.
@@ -138,6 +175,8 @@ Run the tests with `python -m pytest`.
 
 - Bluetooth audio-haptics packet format reverse-engineered by
   [SAxense](https://github.com/egormanga/SAxense) (independent reimplementation here).
+- Kingdom Hearts addresses from [KHPCSpeedrunTools](https://github.com/Denhonator/KHPCSpeedrunTools)
+  (public domain) and the [Archipelago](https://github.com/ArchipelagoMW/Archipelago) KH2 client.
 - DSX mod protocol from [DualSenseX](https://github.com/Paliverse/DualSenseX)'s published UDP example and
   [DualSenseY-v2](https://github.com/WujekFoliarz/DualSenseY-v2) (MIT).
 - Output report layout from the Linux `hid-playstation` driver; trigger encodings documented by Nielk1.

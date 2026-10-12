@@ -1,0 +1,68 @@
+{
+  "id": "kh2",
+  "name": "Kingdom Hearts II Final Mix",
+  "process": [
+    "KINGDOM HEARTS II FINAL MIX.exe"
+  ],
+  "source": "KHPCSpeedrunTools 2FMMods io_packages; Archipelago KH2 client (Slot1 layout)",
+  "versions": {
+    "Steam Global 1.0.0.2": {
+      "check": {
+        "offset": "0x660EF4",
+        "type": "u8",
+        "equals": 106
+      },
+      "fields": {
+        "hp": {
+          "offset": "0x2A23598",
+          "type": "i32"
+        },
+        "max_hp": {
+          "offset": "0x2A2359C",
+          "type": "i32"
+        },
+        "mp": {
+          "offset": "0x2A23718",
+          "type": "i32"
+        },
+        "max_mp": {
+          "offset": "0x2A2371C",
+          "type": "i32"
+        },
+        "battle": {
+          "offset": "0x2A11404",
+          "type": "u8"
+        }
+      }
+    },
+    "Steam JP 1.0.0.2": {
+      "check": {
+        "offset": "0x660E74",
+        "type": "u8",
+        "equals": 106
+      },
+      "fields": {
+        "hp": {
+          "offset": "0x2A23598",
+          "type": "i32"
+        },
+        "max_hp": {
+          "offset": "0x2A2359C",
+          "type": "i32"
+        },
+        "mp": {
+          "offset": "0x2A23718",
+          "type": "i32"
+        },
+        "max_mp": {
+          "offset": "0x2A2371C",
+          "type": "i32"
+        },
+        "battle": {
+          "offset": "0x2A11404",
+          "type": "u8"
+        }
+      }
+    }
+  }
+}

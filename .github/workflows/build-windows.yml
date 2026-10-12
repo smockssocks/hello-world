@@ -34,6 +34,7 @@ jobs:
         run: >
           pyinstaller --noconfirm --onefile --windowed --name DS5Forge
           --add-data "ds5forge/profiles;ds5forge/profiles"
+          --add-data "ds5forge/gamedata;ds5forge/gamedata"
           --add-data "vgamepad/win/vigem/client;vgamepad/win/vigem/client"
           --hidden-import vgamepad --hidden-import vgamepad.win.virtual_gamepad
           --collect-all pyaudiowpatch

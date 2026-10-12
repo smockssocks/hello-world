@@ -23,7 +23,7 @@ ds5forge = "ds5forge.__main__:main"
 include = ["ds5forge*"]
 
 [tool.setuptools.package-data]
-ds5forge = ["profiles/*.json"]
+ds5forge = ["profiles/*.json", "gamedata/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

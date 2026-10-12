@@ -258,11 +258,11 @@ class Engine:
 
             prof = self.profile
             self.mixer.gain = self.settings.haptic_intensity
-            self.audio_layer.configure(self.mixer, prof.audio_haptics and self.capture.running,
-                                       prof.audio_gain, prof.audio_cutoff)
-            self.audio_layer.hits(self.mixer, prof.audio_haptics and prof.audio_hits, prof.audio_hit_strength)
             self._poll_mod_text_file(now)
             outputs = self.integration.tick(self, dt) if self.integration else Outputs()
+            audio_on = prof.audio_haptics and self.capture.running and not outputs.mute_audio
+            self.audio_layer.configure(self.mixer, audio_on, prof.audio_gain, prof.audio_cutoff)
+            self.audio_layer.hits(self.mixer, audio_on and prof.audio_hits, prof.audio_hit_strength)
             self.last_outputs = outputs
             if not self.controller.connected:
                 return

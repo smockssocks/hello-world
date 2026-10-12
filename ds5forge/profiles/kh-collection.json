@@ -7,7 +7,7 @@
     "KINGDOM HEARTS Dream Drop Distance.exe",
     "KINGDOM HEARTS 0.2 Birth by Sleep.exe"
   ],
-  "notes": "Same setup as Birth by Sleep: Steam Input off, game rumble and sound become HD haptics.",
+  "notes": "Same setup as Birth by Sleep: Steam Input off, game rumble and sound become HD haptics. KH1 and KH2: game state (HP, MP, battles, cutscenes) is read automatically - hits, healing, low-HP heartbeat, spell casts and boss alerts are felt in the haptics, triggers and lightbar.",
   "audio_haptics": {
     "enabled": true,
     "gain": 0.9,
@@ -18,5 +18,18 @@
   "xbox_bridge": {
     "enabled": true,
     "trigger_rumble": false
+  },
+  "integration": "kingdom_hearts",
+  "integration_settings": {
+    "damage": 1.0,
+    "heal": 0.6,
+    "heartbeat": true,
+    "low_hp": 0.25,
+    "trigger_effects": true,
+    "lightbar": "hp",
+    "player_leds": true,
+    "mp": true,
+    "battle_alerts": true,
+    "quiet_cutscenes": true
   }
 }
