@@ -1,5 +1,4 @@
 import struct
-import time
 
 from ds5forge import gamedata
 from ds5forge.haptics.synth import HapticMixer
@@ -84,7 +83,7 @@ def test_integration_reads_fake_game_memory():
     integ.tick(ctx, 0.016)
     assert "HP 50/50" in integ.status()
     struct.pack_into("<i", mem.data, 0x100, 30)
-    time.sleep(0.02)
+    integ._last_read = 0.0  # force a fresh read (Windows' monotonic clock ticks in ~15 ms steps)
     out = integ.tick(ctx, 0.016)
     assert out.lightbar == (255, 0, 0)
 
