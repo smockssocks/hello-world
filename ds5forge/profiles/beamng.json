@@ -1,0 +1,21 @@
+{
+  "name": "BeamNG.drive / Live for Speed",
+  "exe": [
+    "BeamNG.drive.x64.exe",
+    "BeamNG.x64.exe",
+    "LFS.exe"
+  ],
+  "integration": "outgauge",
+  "integration_settings": {
+    "port": 4444,
+    "engine": 0.35,
+    "road": 0.5,
+    "impacts": 0.8,
+    "brake_stiffness": 0.7
+  },
+  "audio_haptics": {
+    "enabled": true,
+    "gain": 0.8,
+    "cutoff": 180
+  }
+}

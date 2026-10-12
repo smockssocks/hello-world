@@ -1,0 +1,3 @@
+# Xbox bridge for games that only support Xbox controllers.
+# Installing this pops up the ViGEmBus driver installer the first time.
+vgamepad>=0.1.0

@@ -1,0 +1,29 @@
+[project]
+name = "ds5forge"
+version = "0.1.0"
+description = "Free DualSense haptics, adaptive triggers and game integrations for Windows"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+    "hidapi>=0.14",
+    "numpy>=1.24",
+    "psutil>=5.9",
+    "pyaudiowpatch>=0.2.12; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+xbox = ["vgamepad>=0.1.0"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+ds5forge = "ds5forge.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["ds5forge*"]
+
+[tool.setuptools.package-data]
+ds5forge = ["profiles/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

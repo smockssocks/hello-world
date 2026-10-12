@@ -1,0 +1,57 @@
+name: Build Windows app
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt pyinstaller pytest
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      - name: Fetch vgamepad (without running its driver installer)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force vg | Out-Null
+          Invoke-WebRequest -Uri https://files.pythonhosted.org/packages/source/v/vgamepad/vgamepad-0.1.0.tar.gz -OutFile vg/vgamepad.tar.gz
+          tar -xzf vg/vgamepad.tar.gz -C vg
+          Copy-Item -Recurse vg/vgamepad-0.1.0/vgamepad ./vgamepad
+          Remove-Item -Recurse ./vgamepad/win/vigem/install
+
+      - name: Build DS5Forge.exe
+        run: >
+          pyinstaller --noconfirm --onefile --windowed --name DS5Forge
+          --add-data "ds5forge/profiles;ds5forge/profiles"
+          --add-data "vgamepad/win/vigem/client;vgamepad/win/vigem/client"
+          --hidden-import vgamepad --hidden-import vgamepad.win.virtual_gamepad
+          --collect-all pyaudiowpatch
+          launcher.py
+
+      - name: Smoke test the exe
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath dist/DS5Forge.exe -ArgumentList "--list" -PassThru -Wait -NoNewWindow
+          if ($p.ExitCode -ne 0) { throw "DS5Forge.exe --list failed with $($p.ExitCode)" }
+
+      - name: Package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force package | Out-Null
+          Copy-Item dist/DS5Forge.exe, README.md, allow-forza-localhost.bat package/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DS5Forge-windows
+          path: package/

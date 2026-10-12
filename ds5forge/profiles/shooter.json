@@ -1,0 +1,36 @@
+{
+  "name": "Shooter (any game)",
+  "notes": "Pick this manually for shooters. Aiming (L2 held) gives R2 a gun-trigger break, and gunfire in the game audio kicks back through the trigger you're holding.",
+  "audio_haptics": {
+    "enabled": true,
+    "gain": 1.1,
+    "cutoff": 220,
+    "trigger_kick": true,
+    "kick_threshold": 0.15
+  },
+  "triggers": {
+    "left": {
+      "type": "feedback",
+      "position": 2,
+      "strength": 3
+    },
+    "right": {
+      "type": "feedback",
+      "position": 3,
+      "strength": 2
+    }
+  },
+  "rules": [
+    {
+      "when": [
+        "l2"
+      ],
+      "right": {
+        "type": "weapon",
+        "start": 3,
+        "end": 5,
+        "strength": 7
+      }
+    }
+  ]
+}

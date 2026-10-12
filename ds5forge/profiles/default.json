@@ -1,0 +1,9 @@
+{
+  "name": "Default (any game)",
+  "notes": "Used when no known game is running. Game audio drives the haptics; triggers are left free.",
+  "audio_haptics": {
+    "enabled": true,
+    "gain": 1.0,
+    "cutoff": 250
+  }
+}

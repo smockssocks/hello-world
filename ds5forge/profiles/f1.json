@@ -1,0 +1,23 @@
+{
+  "name": "EA SPORTS F1",
+  "exe": [
+    "F1_23.exe",
+    "F1_24.exe",
+    "F1_25.exe"
+  ],
+  "integration": "f1",
+  "integration_settings": {
+    "port": 20777,
+    "engine": 0.3,
+    "road": 0.4,
+    "kerbs": 0.9,
+    "impacts": 0.8,
+    "slip_haptics": 0.6,
+    "brake_stiffness": 0.9
+  },
+  "audio_haptics": {
+    "enabled": true,
+    "gain": 0.3,
+    "cutoff": 150
+  }
+}

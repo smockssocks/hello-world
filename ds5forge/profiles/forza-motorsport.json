@@ -1,0 +1,24 @@
+{
+  "name": "Forza Motorsport",
+  "exe": [
+    "forza_steamworks_release_final.exe",
+    "forza_gaming.desktop.x64_release_final.exe",
+    "ForzaMotorsport7.exe",
+    "forza7.exe"
+  ],
+  "integration": "forza",
+  "integration_settings": {
+    "port": 5300,
+    "engine": 0.3,
+    "road": 0.4,
+    "kerbs": 0.9,
+    "impacts": 0.8,
+    "slip_haptics": 0.6,
+    "brake_stiffness": 0.8
+  },
+  "audio_haptics": {
+    "enabled": true,
+    "gain": 0.3,
+    "cutoff": 150
+  }
+}

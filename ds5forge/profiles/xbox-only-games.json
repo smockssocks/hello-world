@@ -1,0 +1,13 @@
+{
+  "name": "Xbox-only game (rumble to haptics)",
+  "notes": "For games that don't support PlayStation controllers. Creates a virtual Xbox controller (needs ViGEmBus) and turns the game's rumble into DualSense haptics plus trigger feedback. Turn off Steam Input for the game, and consider HidHide so the game doesn't see two controllers.",
+  "audio_haptics": {
+    "enabled": true,
+    "gain": 0.6,
+    "cutoff": 200
+  },
+  "xbox_bridge": {
+    "enabled": true,
+    "trigger_rumble": true
+  }
+}
