@@ -1,5 +1,4 @@
 import struct
-import time
 
 from ds5forge.haptics.synth import HapticMixer
 from ds5forge.integrations import assetto, f1, forza, outgauge

@@ -1,0 +1,18 @@
+{
+  "name": "Skyrim Special Edition / Anniversary",
+  "exe": [
+    "SkyrimSE.exe"
+  ],
+  "notes": "Install SKSE and the 'Skyrim SE Dual Sense Adaptive Trigger Mod' by dvize from Nexus: it talks to DS5 Forge exactly like it talks to DSX (no DSX purchase needed). The mod handles the triggers (bow draw, spell casting, blocking...). Skyrim only understands Xbox controllers, so DS5 Forge creates a virtual one and turns Skyrim's rumble into HD haptics. Turn Steam Input OFF for Skyrim.",
+  "audio_haptics": {
+    "enabled": true,
+    "gain": 0.8,
+    "cutoff": 220,
+    "hits": true,
+    "hit_strength": 0.6
+  },
+  "xbox_bridge": {
+    "enabled": true,
+    "trigger_rumble": false
+  }
+}

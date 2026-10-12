@@ -1,0 +1,17 @@
+{
+  "name": "Cyberpunk 2077",
+  "exe": [
+    "Cyberpunk2077.exe"
+  ],
+  "notes": "Cyberpunk supports the DualSense itself (patch 2.1+), so DS5 Forge stays hands-off and lets the game drive the triggers. Wired (USB): the game also does its own HD haptics, DS5 Forge does nothing. Wireless: DS5 Forge adds HD haptics from the game's sound. For triggers over Bluetooth, or extra trigger effects, install the 'DualSense Adaptive Trigger Effects' CET mod (Nexus) - DS5 Forge finds its trigger file automatically. Turn Steam Input OFF for Cyberpunk.",
+  "hands_off": true,
+  "haptics": "bluetooth_only",
+  "audio_haptics": {
+    "enabled": true,
+    "gain": 0.9,
+    "cutoff": 220,
+    "hits": true,
+    "hit_strength": 0.6
+  },
+  "mod_text_search": "plugins/cyber_engine_tweaks/mods"
+}

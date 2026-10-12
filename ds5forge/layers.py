@@ -23,6 +23,7 @@ class AudioLayer:
         self.source: AudioPassthrough | None = None
         self._kick_until = 0.0
         self._kick_side = "right"
+        self._last_hit = 0.0
 
     def configure(self, mixer, enabled: bool, gain: float, cutoff: float) -> None:
         if enabled and self.capture.running:
@@ -34,6 +35,17 @@ class AudioLayer:
         elif self.source is not None:
             mixer.set_channel(self.CHANNEL, None)
             self.source = None
+
+    def hits(self, mixer, enabled: bool, strength: float, threshold: float = 0.12) -> None:
+        """Adds a crisp tap on sharp sounds (sword hits, impacts) on top of the raw audio rumble."""
+        if not enabled or not self.capture.running:
+            return
+        now = time.monotonic()
+        tr = self.capture.transient
+        if tr > threshold and now - self._last_hit > 0.09:
+            self._last_hit = now
+            amp = min(1.0, strength * (0.5 + tr * 2))
+            mixer.play(synth.Tone(150, amp, 0.035, attack=0.001, release=0.025, freq_end=90))
 
     def trigger_kick(self, inp: InputState, enabled: bool, threshold: float) -> tuple[TriggerEffect | None, TriggerEffect | None]:
         """Shooter helper: when a trigger is held and the audio has a sharp hit

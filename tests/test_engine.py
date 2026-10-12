@@ -145,7 +145,9 @@ def test_bt_haptics_rate():
 def test_builtin_profiles_load():
     profiles = load_profiles()
     assert "Default (any game)" in profiles
-    assert profiles["Forza Horizon 4/5"].integration == "forza"
+    assert profiles["Cyberpunk 2077"].hands_off and profiles["Cyberpunk 2077"].haptics == "bluetooth_only"
+    assert profiles["Skyrim Special Edition / Anniversary"].xbox_bridge
+    assert "SkyrimSE.exe" in profiles["Skyrim Special Edition / Anniversary"].exe
     shooter = profiles["Shooter (any game)"]
     inp = p.InputState()
     inp.buttons["l2"] = True
@@ -164,3 +166,29 @@ def test_connect_does_not_force_rumble_mode():
         assert first[1 + p.OFF_FLAG2] & p.FLAG2_LIGHTBAR_SETUP
     finally:
         c.stop()
+
+
+def test_hands_off_profile_only_forwards_mod_effects():
+    import json
+    import socket
+
+    eng, dev = make_engine()
+    prof = Profile.from_dict({"name": "Native", "hands_off": True, "haptics": "bluetooth_only"})
+    eng.profiles["Native"] = prof
+    eng.settings.profile = "Native"
+    eng.start()
+    try:
+        assert wait_for(lambda: eng.controller.connected)
+        assert wait_for(lambda: eng._output_key is not None)
+        assert eng.output is None  # wired + bluetooth_only -> game owns the haptics
+        time.sleep(0.2)
+        n = len(dev.writes)
+        time.sleep(0.2)
+        assert len(dev.writes) == n  # nothing written while hands-off
+        c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        c.sendto(json.dumps({"instructions": [{"type": 1, "parameters": [0, 2, 16, 2, 7, 8]}]}).encode(),
+                 ("127.0.0.1", eng.dsx.port))
+        assert wait_for(lambda: any(w[1] & p.FLAG0_RIGHT_TRIGGER and w[1 + p.OFF_RIGHT_TRIGGER] == 0x25
+                                    for w in dev.writes))
+    finally:
+        eng.stop()

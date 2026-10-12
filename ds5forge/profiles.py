@@ -87,6 +87,16 @@ class Profile:
     right_trigger: TriggerEffect | None = None
     rules: list[TriggerRule] = field(default_factory=list)
     lightbar: tuple[int, int, int] | None = None
+    # "auto" = use haptics, "off" = never, "bluetooth_only" = only when wireless (the game
+    # handles haptics itself over USB, e.g. Cyberpunk 2077's native DualSense support).
+    haptics: str = "auto"
+    # Don't touch triggers/lights at all (the game drives the DualSense natively).
+    # Mods talking to the DSX-compatible server can still set them.
+    hands_off: bool = False
+    audio_hits: bool = False  # extra punchy tap on sharp sounds (hits, impacts)
+    audio_hit_strength: float = 0.7
+    # Folder (relative to the game's .exe) to search for a DSX text-file mod's trigger file.
+    mod_text_search: str | None = None
     builtin: bool = False
     path: Path | None = None
 
@@ -129,6 +139,11 @@ class Profile:
             right_trigger=TriggerEffect.from_dict(triggers["right"]) if triggers.get("right") else None,
             rules=[TriggerRule.from_dict(r) for r in d.get("rules", [])],
             lightbar=tuple(lb) if lb else None,
+            haptics=d.get("haptics", "auto"),
+            hands_off=bool(d.get("hands_off", False)),
+            audio_hits=bool(audio.get("hits", False)),
+            audio_hit_strength=float(audio.get("hit_strength", 0.7)),
+            mod_text_search=d.get("mod_text_search"),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -141,7 +156,8 @@ class Profile:
             d["integration_settings"] = self.integration_settings
         d["audio_haptics"] = {"enabled": self.audio_haptics, "gain": self.audio_gain,
                               "cutoff": self.audio_cutoff, "trigger_kick": self.audio_trigger_kick,
-                              "kick_threshold": self.audio_kick_threshold}
+                              "kick_threshold": self.audio_kick_threshold,
+                              "hits": self.audio_hits, "hit_strength": self.audio_hit_strength}
         d["xbox_bridge"] = {"enabled": self.xbox_bridge, "trigger_rumble": self.xbox_trigger_rumble}
         triggers = {}
         if self.left_trigger:
@@ -154,6 +170,12 @@ class Profile:
             d["rules"] = [r.to_dict() for r in self.rules]
         if self.lightbar:
             d["lightbar"] = list(self.lightbar)
+        if self.haptics != "auto":
+            d["haptics"] = self.haptics
+        if self.hands_off:
+            d["hands_off"] = True
+        if self.mod_text_search:
+            d["mod_text_search"] = self.mod_text_search
         return d
 
 
@@ -185,6 +207,19 @@ def save_user_profile(profile: Profile) -> Path:
     path.write_text(json.dumps(profile.to_dict(), indent=2), encoding="utf-8")
     profile.path, profile.builtin = path, False
     return path
+
+
+def find_process_exe(names: list[str]) -> Path | None:
+    """Full path of the first running process whose name is in ``names``."""
+    try:
+        import psutil
+    except ImportError:
+        return None
+    wanted = {n.lower() for n in names}
+    for proc in psutil.process_iter(["name", "exe"]):
+        if (proc.info.get("name") or "").lower() in wanted and proc.info.get("exe"):
+            return Path(proc.info["exe"])
+    return None
 
 
 def running_processes() -> set[str]:

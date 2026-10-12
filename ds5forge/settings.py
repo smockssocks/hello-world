@@ -20,6 +20,7 @@ class Settings:
     haptic_intensity: float = 1.0  # 0-2
     trigger_intensity: float = 1.0  # 0-1
     audio_capture: bool = True  # listen to game audio for audio haptics
+    dsx_server: bool = True  # accept DSX game mods (Skyrim, Cyberpunk, ...) on UDP 6969
     auto_profiles: bool = True  # switch profile when a known game is running
     profile: str = DEFAULT_PROFILE_NAME  # profile used when no game is detected / manual choice
     lightbar_color: list[int] = field(default_factory=lambda: [0, 90, 255])

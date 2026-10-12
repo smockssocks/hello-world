@@ -1,0 +1,18 @@
+{
+  "name": "Kingdom Hearts Birth by Sleep",
+  "exe": [
+    "KINGDOM HEARTS Birth by Sleep FINAL MIX.exe"
+  ],
+  "notes": "Haptics come from the game's own rumble (through the virtual Xbox controller) plus its sound: keyblade hits and magic give crisp taps, big attacks and bosses give deep rumble. Before playing: turn Steam Input OFF for this game. If the game reacts to every button twice, install HidHide and hide the DualSense from the game. Triggers are left free; use the Trigger Lab if you want resistance.",
+  "audio_haptics": {
+    "enabled": true,
+    "gain": 0.9,
+    "cutoff": 220,
+    "hits": true,
+    "hit_strength": 0.7
+  },
+  "xbox_bridge": {
+    "enabled": true,
+    "trigger_rumble": false
+  }
+}

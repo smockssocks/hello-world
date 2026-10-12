@@ -13,7 +13,6 @@ from tkinter import colorchooser, messagebox, ttk
 from . import APP_NAME, __version__
 from .engine import Engine
 from .haptics import synth
-from .integrations import REGISTRY
 from .profiles import Profile, save_user_profile, user_profile_dir
 from .settings import HAPTICS_MODES
 from .triggers import _BUILDERS, EFFECT_TYPES, PARAM_RANGES, PRESETS, TriggerEffect
@@ -25,6 +24,16 @@ MUTED = "#9aa0b0"
 ACCENT = "#3d7bff"
 GOOD = "#3ccf7a"
 WARN = "#ffb648"
+
+
+_SYSTEM_PROCESSES = {
+    "svchost.exe", "explorer.exe", "conhost.exe", "csrss.exe", "dwm.exe", "lsass.exe", "services.exe",
+    "smss.exe", "wininit.exe", "winlogon.exe", "runtimebroker.exe", "searchhost.exe", "sihost.exe",
+    "taskhostw.exe", "ctfmon.exe", "fontdrvhost.exe", "dllhost.exe", "audiodg.exe", "spoolsv.exe",
+    "system", "registry", "startmenuexperiencehost.exe", "textinputhost.exe", "shellexperiencehost.exe",
+    "securityhealthservice.exe", "msmpeng.exe", "wudfhost.exe", "dashost.exe", "lsaiso.exe",
+    "python.exe", "pythonw.exe", "ds5forge.exe",
+}
 
 
 class LogHandler(logging.Handler):
@@ -118,6 +127,8 @@ class App:
         self.lbl_audio.pack(anchor="w")
         self.lbl_xbox = ttk.Label(status, text="", style="Muted.TLabel", wraplength=380)
         self.lbl_xbox.pack(anchor="w")
+        self.lbl_mods = ttk.Label(status, text="", style="Muted.TLabel", wraplength=380)
+        self.lbl_mods.pack(anchor="w")
 
         meters = ttk.Frame(status, style="Card.TFrame")
         meters.pack(fill="x", pady=(10, 0))
@@ -164,6 +175,9 @@ class App:
         ttk.Checkbutton(grid, text="Use game audio for haptics", variable=self.var_audio,
                         command=self._toggle_audio).grid(row=2, column=2, columnspan=2, sticky="w", padx=4)
 
+        self.var_dsx = tk.BooleanVar(value=st.dsx_server)
+        ttk.Checkbutton(grid, text="Accept DSX game mods (Skyrim, Cyberpunk...)", variable=self.var_dsx,
+                        command=self._toggle_dsx).grid(row=4, column=0, columnspan=2, sticky="w", padx=4)
         ttk.Button(grid, text="Lightbar colour...", command=self._pick_color).grid(row=3, column=0, sticky="w", padx=4, pady=6)
         ttk.Label(grid, text="LED brightness", style="Card.TLabel").grid(row=3, column=2, sticky="w", padx=4)
         self.var_bright = tk.StringVar(value=["Bright", "Medium", "Dim"][st.led_brightness])
@@ -205,6 +219,14 @@ class App:
         else:
             self.engine.capture.stop()
 
+    def _toggle_dsx(self):
+        on = self.var_dsx.get()
+        self._set("dsx_server", on)
+        if on:
+            self.engine.start_dsx_server()
+        else:
+            self.engine.dsx.stop()
+
     def _pick_color(self):
         rgb, _ = colorchooser.askcolor(color="#%02x%02x%02x" % tuple(self.engine.settings.lightbar_color),
                                        title="Lightbar colour")
@@ -226,6 +248,7 @@ class App:
         btns = ttk.Frame(left, style="Card.TFrame")
         btns.pack(fill="x", pady=(8, 0))
         ttk.Button(btns, text="Use when no game runs", command=self._use_profile).pack(fill="x", pady=2)
+        ttk.Button(btns, text="Add running game...", command=self._add_running_game).pack(fill="x", pady=2)
         ttk.Button(btns, text="Reload", command=self._reload_profiles).pack(fill="x", pady=2)
         ttk.Button(btns, text="Open my profiles folder", command=self._open_profiles_dir).pack(fill="x", pady=2)
 
@@ -273,6 +296,40 @@ class App:
         self.engine.reload_profiles()
         self._fill_profiles()
         messagebox.showinfo(APP_NAME, "Saved to %s" % path)
+
+    def _add_running_game(self):
+        """Pick a running program and add it to the profile being edited."""
+        from .profiles import running_processes
+        try:
+            data = json.loads(self.txt_profile.get("1.0", "end"))
+        except Exception:
+            messagebox.showinfo(APP_NAME, "Select a profile first.")
+            return
+        names = sorted(n for n in running_processes() if n.endswith(".exe") and n not in _SYSTEM_PROCESSES)
+        win = tk.Toplevel(self.root)
+        win.title("Add running game")
+        win.configure(bg=BG)
+        win.geometry("380x420")
+        ttk.Label(win, text="Start your game, then pick its .exe:").pack(anchor="w", padx=10, pady=(10, 4))
+        lst = tk.Listbox(win, bg=PANEL, fg=FG, selectbackground=ACCENT, borderwidth=0, highlightthickness=0)
+        lst.pack(fill="both", expand=True, padx=10)
+        for n in names:
+            lst.insert("end", n)
+
+        def add():
+            sel = lst.curselection()
+            if not sel:
+                return
+            exe = names[sel[0]]
+            data.setdefault("exe", [])
+            if exe.lower() not in (e.lower() for e in data["exe"]):
+                data["exe"].append(exe)
+            self.txt_profile.delete("1.0", "end")
+            self.txt_profile.insert("1.0", json.dumps(data, indent=2))
+            win.destroy()
+            messagebox.showinfo(APP_NAME, "Added %s. Click 'Save as my profile' to keep it." % exe)
+
+        ttk.Button(win, text="Add to profile", command=add).pack(pady=10)
 
     def _reload_profiles(self):
         self.engine.reload_profiles()
@@ -419,22 +476,25 @@ class App:
         wheel = lambda e: canvas.yview_scroll(int(-e.delta / 120) or (-1 if e.delta > 0 else 1), "units")
         canvas.bind("<Enter>", lambda e: canvas.bind_all("<MouseWheel>", wheel))
         canvas.bind("<Leave>", lambda e: canvas.unbind_all("<MouseWheel>"))
-        intro = self._card(inner, "Any game")
+        intro = self._card(inner, "How DS5 Forge works with your games")
         intro.pack(fill="x", padx=4, pady=4)
         ttk.Label(intro, style="Card.TLabel", wraplength=760, justify="left", text=(
-            "Every game gets audio haptics automatically: the low end of the game's sound plays through the "
-            "controller's haptic motors. Pick the 'Shooter' profile for gun-style triggers, or "
-            "'Xbox-only game' for games that don't support PlayStation controllers. Games below send live "
-            "telemetry for detailed racing feedback: ABS and wheelspin through the triggers, kerbs, engine, "
-            "gear shifts and impacts through the haptics, and a shift light on the lightbar."
+            "When a game starts, DS5 Forge switches to its profile automatically. Every game gets HD "
+            "haptics from its sound, and its rumble turns into HD haptics too. Free DualSense mods made "
+            "for the paid DSX app (Skyrim, Cyberpunk, Fallout 4, RDR2...) work with DS5 Forge directly: "
+            "keep 'Accept DSX game mods' on and install the mod as its page says, skipping the DSX part. "
+            "For almost every game: turn Steam Input OFF for it (Steam > game > Properties > Controller)."
         )).pack(anchor="w")
-        for cls in REGISTRY.values():
-            card = self._card(inner, cls.name)
+        for prof in sorted(self.engine.profiles.values(), key=lambda pr: pr.name):
+            if not prof.notes or prof.name == "Default (any game)":
+                continue
+            card = self._card(inner, prof.name)
             card.pack(fill="x", padx=4, pady=4)
-            ttk.Label(card, text=cls.games, style="Muted.TLabel").pack(anchor="w")
-            for i, step in enumerate(cls.setup, 1):
-                ttk.Label(card, text="%d. %s" % (i, step), style="Card.TLabel", wraplength=760,
-                          justify="left").pack(anchor="w", pady=1)
+            if prof.exe:
+                ttk.Label(card, text="Detected by: " + ", ".join(prof.exe), style="Muted.TLabel",
+                          wraplength=760, justify="left").pack(anchor="w")
+            ttk.Label(card, text=prof.notes, style="Card.TLabel", wraplength=760,
+                      justify="left").pack(anchor="w", pady=2)
 
     # ------------------------------------------------------------------- log
     def _build_log(self, nb):
@@ -458,10 +518,11 @@ class App:
             s["haptics"], ("\n" + s["haptics_note"]) if s["haptics_note"] and s["haptics_note"] != s["haptics"] else ""))
         self.lbl_audio.configure(text="Game audio: %s" % s["audio"])
         self.lbl_xbox.configure(text="Xbox bridge: %s" % s["xbox"])
+        self.lbl_mods.configure(text="Game mods: %s" % s["mods"])
         self.lbl_profile.configure(text=s["profile"])
         self.lbl_game.configure(text=("Detected: %s" % s["game"]) if s["game"] else "No known game running")
         self.lbl_integration.configure(text=("%s\n%s" % (s["integration"], s["integration_status"]))
-                                       if s["integration"] else "No telemetry integration for this profile")
+                                       if s["integration"] else self._profile_summary())
         inp = self.engine.input
         self.bar_l2["value"] = inp.l2 / 255
         self.bar_r2["value"] = inp.r2 / 255
@@ -475,6 +536,23 @@ class App:
             self.txt_log.configure(state="disabled")
             self.txt_log.see("end")
         self.root.after(100, self._refresh)
+
+    def _profile_summary(self) -> str:
+        prof = self.engine.profile
+        parts = []
+        if prof.hands_off:
+            parts.append("The game drives the DualSense itself; DS5 Forge stays out of the way")
+        if prof.audio_haptics:
+            parts.append("HD haptics from game sound" + (" with hit taps" if prof.audio_hits else ""))
+        if prof.xbox_bridge:
+            parts.append("game rumble turned into HD haptics (virtual Xbox controller)")
+        if prof.haptics == "bluetooth_only":
+            parts.append("DS5 Forge haptics only when wireless")
+        if self.engine.mod_text_file:
+            parts.append("trigger mod file: %s" % self.engine.mod_text_file.name)
+        if prof.left_trigger or prof.right_trigger or prof.rules:
+            parts.append("custom trigger effects")
+        return "\n".join("- " + p for p in parts) if parts else ""
 
     def close(self):
         self.engine.lab_override = None
